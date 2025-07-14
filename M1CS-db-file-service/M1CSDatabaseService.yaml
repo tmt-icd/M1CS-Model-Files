@@ -1,0 +1,974 @@
+openapi: 3.0.3
+info:
+  version: '0.1'
+  title: M1CS Database Service API Endpoints
+  description: >-
+    The M1CS Database Service API is HTTP(s) endpoints for submitting
+    and accessing M1CS files and other related information during operations. This is the PDR revision.
+    <p>
+    The collection of routes listed on this page are HTTP(s) end points exposed by TIO Common Software.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: 'http://future_m1cs_database_server/V1'
+  - url: 'https://future_m1cs_database_server/V1'
+tags:
+  - name: Submission Endpoints
+    description: Endpoints for adding a file to the M1CS Database.
+  - name: Discovery Endpoints
+    description: Endpoints for file queries about files and data in the M1CS Database.
+  - name: Retrieval Endpoints
+    description: Endpoints for retrieving files and data from the M1CS Database.
+externalDocs:
+  description: "References for time format"
+  url: https://datatracker.ietf.org/doc/html/rfc3339
+paths:
+  '/files/{fileType}':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding one M1CS larger matrix or array as a file to
+          the M1CS Database with all required and optional information. The database key for the
+          the database entry created for the submitted matrix file is the result."
+      summary: "Add one file to the M1CS Database."
+      operationId: addFile
+      parameters:
+        - $ref: "#/components/parameters/fileType"
+        - $ref: '#/components/parameters/userTime'
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: The submitted matrix has been successfully added. A description of the added file including its unique key is returned as JSON.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/FileItem"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/snapshot/sensors':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding one APS Sensor Snapshot. The params should be previously obtained keys
+        received when storing items. A database entry is created for the snapshot and a sensorSettingsDataID is returned
+        within a JSON object."
+      summary: "Add one APS sensor snapshot to the M1CS Database."
+      operationId: addSensorSnapshot
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+        - name: za
+          in: query
+          description: The zenith angle to be used with the snapshot in degrees.
+          example: 45.0
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: SCC
+          in: query
+          description: The key of an existing SCC database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: SHWP
+          in: query
+          description: The key of an existing Sensor Height Wavefrom Parameters database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: SGWP
+          in: query
+          description: The key of an existing Sensor Gap Wavefrom Parameters database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: ISEG
+          in: query
+          description: The key of an existing ISEG, Installed Segments database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: AMAT
+          in: query
+          description: The key of an existing AMAT, A Matrix database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: TITM
+          in: query
+          description: The key of an existing TITM, T_i Transformation Matrix database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: OLS
+          in: query
+          description: The key of an existing OLS, Outer Loop State database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: SGHV
+          in: query
+          description: The key of an existing SGHV, Sensor Gap & Heights database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: STT
+          in: query
+          description: The key of an existing STT, Segment Temperatures database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: The submitted snapshot has been successfully added. Its unique key is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeStampKey"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/snapshot/outer':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding one RTC Outer Loop Snapshot. The params should be previously obtained keys
+        received when storing items. A database entry is created for the snapshot and a snapshot key is returned
+        within a JSON object."
+      summary: "Add one outer loop snapshot to the M1CS Database."
+      operationId: addOuterSnapshot
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+        - name: OLD
+          in: query
+          description: The key of an existing OLD, Outer Loop Data, database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: OLD_key
+        - name: TOTM
+          in: query
+          description: The key of an existing TOTM, T_o Transformation Matrix database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: TOTM_key
+      responses:
+        '201':
+          description: The submitted snapshot has been successfully added. Its unique key is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeStampKey"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/snapshot/inner':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding one RTC Inner Loop Snapshot. The params should be previously obtained keys
+        received when storing items. A database entry is created for the snapshot and a snapshot key is returned
+        within a JSON object."
+      summary: "Add one inner loop snapshot to the M1CS Database."
+      operationId: addInnerSnapshot
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+        - name: ILG
+          in: query
+          description: The key of an existing ILG, Inner Loop Gains, database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: ILG_key
+        - name: TCTM
+          in: query
+          description: The key of an existing TCTM, T_c Transformation Matrix database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: TCTM_key
+        - name: ILD
+          in: query
+          description: The key of an existing ILD, Inner Loop Data database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: ILD_key
+        - name: TITM
+          in: query
+          description: The key of an existing TITM, T_i Transformation Matrix database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: TITM_key
+        - name: TATM
+          in: query
+          description: The key of an existing TATM, T_a Transformation Matrix database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: TATM_key
+      responses:
+        '201':
+          description: The submitted snapshot has been successfully added. Its unique key is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeStampKey"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/snapshot/current':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint is used to set the current version of the M1CS. Each entry contains the
+        *current* version of other database entries. Whenever a new row is added to current, it becomes the
+        current version of M1CS. The most recent entry of the current table is also used when accessing the
+        current database state of M1CS"
+      summary: "Set the current snapshot to the M1CS Database."
+      operationId: addCurrentSnapshot
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+        - name: SSDID
+          in: query
+          description: The key of an existing APS Snapshot Table database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: SSDID_key1
+        - name: OLS
+          in: query
+          description: The key of an existing OLS, Outer Loop Snapshot Table database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: OLS_key1
+        - name: ILS
+          in: query
+          description: The key of an existing ILS, Inner Loop Snapshot Table database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: ILS_key1
+        - name: ISEG
+          in: query
+          description: The key of an existing ISEG, Installed Segments Table database entry.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: ILS_key1
+      responses:
+        '201':
+          description: The submitted snapshot has been successfully added. Its unique key is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeStampKey"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+    get:
+      tags:
+        - Retrieval Endpoints
+      description: "This endpoint is used to retrieve the current M1CS database state from M1CS Database."
+      summary: "Return current M1CS Database state."
+      operationId: retrieveCurrentState
+
+      responses:
+        '201':
+          description: The submitted snapshot has been successfully added. Its unique key is returned as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentResultItem"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+
+  '/files/since':
+    get:
+      tags:
+        - Discovery Endpoints
+
+      description: "This endpoint lists all file entries since a specific date/time, which is required. A file type is optional. 
+        If included, then only files of that type will be returned.  numResults can limit the number of returned results
+        if needed. If not included, all entries are returned."
+      summary: "Discover file entries since a specific time."
+      operationId: searchFilesSince
+      parameters:
+        - $ref: "#/components/parameters/qfileType"
+        - name: numResults
+          in: query
+          description: If set, up to numResults will be returned.  Otherwise, the default number is returned.
+          schema:
+            type: integer
+            example: 4
+        - $ref: "#/components/parameters/sinceTime"
+
+      responses:
+        '201':
+          description: A list of available database entries within the time range or the most recent number are returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileSearchData"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/files/recent':
+    get:
+      tags:
+        - Discovery Endpoints
+
+      description: "This endpoint lists the most recent 'numResults' files. numResults can limit the number of returned results
+        if needed. If not included, the most recent default is returned."
+      summary: "Discover recent file entries."
+      operationId: searchFilesRecent
+      parameters:
+        - $ref: "#/components/parameters/qfileType"
+        - name: numResults
+          in: query
+          description: If set, up to numResults will be returned.  Otherwise, the default number is returned.
+          schema:
+            type: integer
+            example: 100
+            default: 25
+
+      responses:
+        '201':
+          description: A list of most recent database entries is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileSearchData"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/files/search':
+    get:
+      tags:
+        - Discovery Endpoints
+
+      description: "This endpoint lists all file entries between a start and end date/time, which are required. 
+        One or more items types are optional. 
+        If included, then only those items of those types will be returned.  
+        numResults can limit the number of returned results if needed. If not included, all entries are returned."
+      summary: "Discover item entries for inspection within a range of times."
+      operationId: searchItemsSearch
+      parameters:
+        - $ref: "#/components/parameters/qfileList"
+        - name: numResults
+          in: query
+          description: If set, up to numResults will be returned.  Otherwise, the default number is returned.
+          schema:
+            type: integer
+            example: 40
+        - $ref: "#/components/parameters/startTime"
+        - $ref: "#/components/parameters/endTime"
+
+      responses:
+        '201':
+          description: A list of available database entries within the time range or the most recent number are returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileSearchData"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/items/search':
+    get:
+      tags:
+        - Discovery Endpoints
+
+      description: "This endpoint lists other entries between a start and end date/time, which are required. 
+        Only one item type is possible at this time and it is required. 
+        numResults can limit the number of returned results if needed. If not included, all entries are returned."
+      summary: "Discover item entries for retrieval within a range of times."
+      operationId: searchFilesSearch
+      parameters:
+        - $ref: "#/components/parameters/itemChoice"
+        - name: numResults
+          in: query
+          description: If set, up to numResults will be returned.  Otherwise, the default number is returned.
+          schema:
+            type: integer
+            example: 40
+        - $ref: "#/components/parameters/startTime"
+        - $ref: "#/components/parameters/endTime"
+
+      responses:
+        '201':
+          description:
+            "A list of available database entries within the time range or the most recent number are returned. The
+            content is JSON but the exact properties depend on the item being returned."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemSearchData"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+
+  '/segments':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding the current installed segments list to the M1CS database 
+          to the M1CS Database with all required and optional information. The database key for the
+          the database entry created for the submitted item is the result."
+      summary: "Add active segments list to the M1CS Database."
+      operationId: addSegments
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+      requestBody:
+        content:
+          application/JSON:
+            schema:
+              $ref: "#/components/schemas/SegList"
+            example:
+              [
+                {
+                  cellName: "A1",
+                  segName: "s1"
+                },
+                {
+                  cellName: "A2",
+                  segName: "s2"
+                },
+
+                {
+                  cellName: "F82",
+                  segName: "s492"
+                }
+              ]
+      responses:
+        '201':
+          description: The submitted list has been successfully added. The unique key is returned within a JSON object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SegMapEntry"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/temps':
+      post:
+        tags:
+          - Submission Endpoints
+        description: "This endpoint allows adding a Segment Temperature list to the M1CS database 
+            to the M1CS Database with all required and optional information. The database key for the
+            the database entry created for the submitted item is the result."
+        summary: "Add one segment temperatures set to the M1CS Database."
+        operationId: addTemps
+        parameters:
+          - $ref: '#/components/parameters/userTime'
+        requestBody:
+          content:
+            application/JSON:
+              schema:
+                $ref: "#/components/schemas/TempList"
+              example:
+                [
+                  9.0,
+                  9.1,
+                  9.02
+                ]
+        responses:
+          '201':
+            description: The submitted list has been successfully added. The unique key is returned within a JSON object.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/SegMapEntry"
+          '401':
+            description:
+              "Bad Request. The caller is not authorized for this operation."
+          '500':
+            description:
+              "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/outer/data':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding outer loop data measurements to the outer loop gains and
+        controller table. The data includes values uploaded in a JSON object. A key is returned that can be
+        used for Outer Loop Snapshots."
+      summary: "Add outer loop gains and controller values to the M1CS Database."
+      operationId: addOuterData
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+      requestBody:
+        content:
+          application/JSON:
+            schema:
+              $ref: "#/components/schemas/OuterData"
+      responses:
+        '201':
+          description: The submitted list has been successfully added. The unique key is returned within a JSON object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeStampKey"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/inner/data':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding inner loop data measurements to the inner loop state table.
+        the data includes values for Normalized Controller Values, Sensor Prefilter Time, and Actuator Prefilter Time"
+      summary: "Add inner loop controller and prefilter values to the M1CS Database."
+      operationId: addInnerData
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+      requestBody:
+        content:
+          application/JSON:
+            schema:
+              $ref: "#/components/schemas/InnerData"
+      responses:
+        '201':
+          description: The submitted list has been successfully added. The unique key is returned within a JSON object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeStampKey"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/file/{key}':
+    get:
+      tags:
+        - Retrieval Endpoints
+      description: "This endpoint is used to retrieve a file from M1CS Database using a known key."
+      summary: "Retrieve one file from M1CS Database"
+      operationId: retrieveOne
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "This is a key obtained from discovery or during uploading."
+          schema:
+            type: string
+            format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963366afa6"
+
+      responses:
+        '201':
+          description: A file has been returned.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                example:
+                  "File content"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+components:
+  parameters:
+    startTime:
+      name: startTime
+      in: query
+      required: true
+      description: Query may include a time range. startTime is the oldest time in RFC 3339 format.
+      example: 2025-04-12T23:20:40.52Z
+      schema:
+        type: string
+        format: date-time
+    endTime:
+      name: endTime
+      in: query
+      required: true
+      description: Queries may include a time range. endTime is the most recent time in RFC 3339 format.
+      example: 2025-04-12T23:20:48.00Z
+      schema:
+        type: string
+        format: date-time
+    sinceTime:
+      name: sinceTime
+      required: true  # since time is required
+      in: query
+      description: Query includes a sinceTime that is the time in RFC 3339 format for the start of the search.
+      example: 2025-04-12T23:20:40.52Z
+      schema:
+        type: string
+        format: date-time
+    fileType:
+      name: fileType
+      in: path
+      required: true
+      description: "The type of the file being submitted or searched for."
+      schema:
+        $ref: '#/components/schemas/FileType'
+    userTime:
+      name: userTime
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/UserTime'
+    itemChoice:
+      name: itemType
+      in: query
+      required: true
+      description: A single item type to match.
+      schema:
+        $ref: '#/components/schemas/ItemType'
+    qfileList:
+      name: fileType
+      in: query
+      required: false
+      style: form
+      explode: false
+      description: A list of file types to match.
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/FileType'
+      example:
+        [ "SCC", "TCTM"]
+    qfileType:  # fileType when in query
+      name: fileType
+      in: query
+      required: false
+      description: The type of the file being submitted or searched for.
+      schema:
+        $ref: '#/components/schemas/FileType'
+    otherType:
+      name: otherType
+      in: path
+      required: true
+      description: The type of the JSON-based item being submitted.
+      schema:
+        $ref: '#/components/schemas/OtherType'
+
+    fileId:
+      in: path
+      name: fileId
+      description: A unique identifier for a previously stored engineering ancillary file.
+      required: true
+      schema:
+        type: string
+        example: a1c6a2ab-4b01-4253-b4c9-70e04b3b48fc
+    uri:
+      name: uri
+      in: query
+      description: A unique identifier for the ancillary file
+      required: true
+      schema:
+        type: string
+        example: tmt:hq/topEndTemps-2025-04-12T23:20:50.52Z
+  schemas:
+    ItemType:
+      description: type of a database item for searching and discovery
+      type: string
+      enum:
+        [ ISEG, STT, BACV, BSEV, OLD, ILD, SSDID, ILS, OLS, CSC ]
+      example: ISEG
+    FileType:
+      description: type of a submitted file, most are arrays within files
+      type: string
+      enum:
+        [AMAT, TOTM, ILG, TCTM, TITM, TATM, SCC, SHWP, SGWP, SGHV, BACV, BSEV]
+      example: SCC
+    OtherType:
+      description: type of a submitted JSON-based item
+      type: string
+      enum:
+        [ STT, BACV, BSEV ]
+      example: SCC
+    UserTime:
+      description: "This is an optional time that can be provided if the default time is not correct.
+                    By default, the time used is the time when the file is submitted. Times
+                    follow ISO-8601 format - yyyy-MM-ddTHH:mm:ssZ. Z is Zulu=UTC."
+      example: 2025-04-12T23:20:50.52Z
+      type: string
+      format: date-time
+    SegList:
+      description: The JSON list should have an entry for each segment A1, A2, A3 ... through F82 for a total of 492 cell locations.
+      type: array
+      maxItems: 492
+      items:
+        $ref: "#/components/schemas/SegItem"
+    TimeStampKey:
+      description: A time-stamp and key for a new snapshot entry.
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        key:
+          type: string
+          format: uuid
+      example:
+        timestamp: 2045-04-12T23:20:50.52Z,
+        key: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    CurrentResultItem:
+      description: Contents of the most recent current table entry.
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        CSCkey:
+          type: string
+          format: uuid
+        SSDIDkey:
+          type: string
+          format: uuid
+        ILSkey:
+          type: string
+          format: uuid
+        OLSkey:
+          type: string
+          format: uuid
+        ISEGKey:
+          type: string
+          format: uuid
+      example:
+        timestamp: 2045-04-12T23:20:50.52Z,
+        CSCkey: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        SSDIDkey: "SSDID-10234"
+        ILSKey: "ILS-0033"
+        OLSKey: "OLS-0034"
+        ISEGKey: "ISEG-20361015-2"
+    TempList:
+      description: The JSON list of temps should be an array of 492 number values.
+      type: array
+      maxItems: 492
+      items:
+        format: number
+    SegItem:
+      description: Each item includes a cell name, such as A42, and a segment name (currently like "s234").  Could be an EId.
+      type: object
+      properties:
+        cellName:
+          type: string
+        segName:
+          type: string
+    SegMapEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-04-12T23:20:50.52Z
+        key:
+          type: string
+          format: uuid
+      example:
+        timestamp: 2045-04-12T23:20:50.52Z
+        key: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    FileItem:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-04-12T23:20:50.52Z
+        fileType:
+          $ref: '#/components/schemas/FileType'
+        key:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6d"
+
+    ItemItem:
+      type: object
+      properties:
+        gain:
+          type: string
+          format: number
+          example: 22.3
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-04-12T23:20:50.52Z
+        fileType:
+          $ref: '#/components/schemas/FileType'
+        key:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6d"
+      example:
+        actuatorPrefilter: 22.343
+        sensorPrefilter: 241.033
+        controller: [
+          [1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9,9, 10.01],
+          [-1.1, -2.2, -3.3, -4.4, -5.5, -6.6, -7.7, -8.8, -9,9, -10.01]
+        ]
+        timestamp: 2045-04-12T23:20:50.52Z
+        key: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+
+    ItemSearchData: #eas
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemItem'
+
+
+    FileSearchData: #eas
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileItem'
+          example: # dataType: Files,
+            [
+              {
+                timestamp: "2045-04-12T23:20:50.52Z",
+                fileType: SCC,
+                key: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              },
+              {
+                timestamp: "2045-04-12T23:20:10.42Z",
+                fileType: SCC,
+                key: "3fa85f64-5717-4562-b3fc-2c963366afb9"
+              }
+            ]
+    OuterData:
+      description: The JSON values for outer loop gains and controller.
+      type: object
+      properties:
+        gains:
+          description: Array must be of size 24 of type double.
+          maxItems: 24
+          type: array
+          items:
+            type: number
+            format: double
+        controller:
+          description: Array must be of size [2,10] of type double
+          type: array
+          items:
+            type: number
+            format: double
+          maxItems: 1
+      example:
+        {
+          gains: [ 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8, 19.9, 20.1, 21.1, 22.2, 23.3, 24.4],
+          controller: [
+            [ 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.1 ],
+            [ 11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8, 19.9, 20.1]
+          ]
+        }
+    InnerData:
+      description: The JSON values for inner loop prefilter values and controller.
+      type: object
+      properties:
+        sensorPre:
+          description: Sensor prefilter time constant value.
+          type: number
+          format: double
+        actuatorPre:
+          description: Actuator prefilter time constant value.
+          type: number
+          format: double
+        controller:
+          description: Array must be of size [2,10] of type double
+          type: array
+          items:
+            type: number
+            format: double
+          maxItems: 1
+      example:
+        {
+          sensorPre: 1.23,
+          actuatorPre: 3.45,
+          controller: [
+            [ 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.1 ],
+            [ 11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8, 19.9, 20.1 ]
+          ]
+        }
