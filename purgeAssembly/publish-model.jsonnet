@@ -10,7 +10,7 @@ local powerFunc() = {
     name: 'pressurePowerState',
     description: |||
         Pressure power state as an 84 character string. Each character can be one of enum: [E, U, P, N]
-        with E=error, U=unavailable, P=power, N=no power. If RIO sampling fails, the value will be E or U]. Char 0 of the string is node box AN1, char 84 is FN14.
+        with E=error, U=unavailable, P=power, N=no power. If RIO sampling fails, the value will be E or U]. Char 0 of the string is node box AN1, char 83 is FN14.
     |||,
     type: "string",
 };
@@ -90,37 +90,37 @@ local addNodeParams() =
                     },
                     {
                         name: 'averageNodePressure',
-                        description: "The average of all node box pressure values. Unit is Pounds Per Square Inch (PSI).",
+                        description: "The average of all node box pressure values. Unit is Pounds Per Square Inch (psi).",
                         type: "double",
                         units: "psi"
                     },
                     {
                         name: 'maxNodePressure',
-                        description: "The largest of all node box pressure values. Unit is Pounds Per Square Inch (PSI).",
+                        description: "The largest of all node box pressure values. Unit is Pounds Per Square Inch (psi).",
                         type: "double",
                         units: "psi"
                     },
                      {
                         name: 'minNodePressure',
-                        description: "The smallest of all node box pressure values. Unit is Pounds Per Square Inch (PSI).",
+                        description: "The smallest of all node box pressure values. Unit is Pounds Per Square Inch (psi).",
                         type: "double",
                         units: "psi"
                     },
                     {
                         name: 'averageSegmentFlow',
-                        description: "The average of all segment flow values. Unit is Liters Per Minute (LPM).",
+                        description: "The average of all segment flow values. Unit is Liters Per Minute (lpm).",
                         type: "double",
                         units: "lpm"
                     },
                      {
                         name: 'maxSegmentFlow',
-                        description: "The largest of all segment flow values. Unit is Liters Per Minute (LPM).",
+                        description: "The largest of all segment flow values. Unit is Liters Per Minute (lpm).",
                         type: "double",
                         units: "lpm"
                     },
                      {
                         name: 'minSegmentFlow',
-                        description: "The smallest of all segment flow values. Unit is Liters Per Minute (LPM).",
+                        description: "The smallest of all segment flow values. Unit is Liters Per Minute (lpm).",
                         type: "double",
                         units: "lpm"
                     },

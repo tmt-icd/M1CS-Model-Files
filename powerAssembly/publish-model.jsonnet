@@ -9,7 +9,7 @@ local powerFunc() = {
     name: 'powerState',
     description: |||
         Mirror power state as a 492 character string. Each character can be one of enum: [E, U, P, N]
-        with E=error, U=unavailable, P=power, N=no power. If RIO sampling fails, the value will be E or U]. Char 0 of the string is A1, char 492 is F82.
+        with E=error, U=unavailable, P=power, N=no power. If RIO sampling fails, the value will be E or U]. Char 0 of the string is A1, char 491 is F82.
     |||,
     type: "string",
 };
@@ -60,7 +60,7 @@ local addParams() =
                         name: 'powerState',
                         description: |||
                             Mirror power state as a 492 character string. Each character can be one of enum: [E, U, P, N]
-                            with E=error, U=unavailable, P=power, N=no power. If RIO sampling fails, the value will be E or U]. Char 0 of the string is A1, char 492 is F82.
+                            with E=error, U=unavailable, P=power, N=no power. If RIO sampling fails, the value will be E or U]. Char 0 of the string is A1, char 491 is F82.
                         |||,
                         type: "string",
                     },
