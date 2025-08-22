@@ -498,16 +498,16 @@ paths:
               [
                 {
                   cellName: "A1",
-                  segName: "s1"
+                  segName: "SN-001"
                 },
                 {
                   cellName: "A2",
-                  segName: "s2"
+                  segName: "SN-002"
                 },
 
                 {
                   cellName: "F82",
-                  segName: "s492"
+                  segName: "SN-492"
                 }
               ]
       responses:
@@ -523,6 +523,54 @@ paths:
         '500':
           description:
             "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
+  '/amatrix':
+    post:
+      tags:
+        - Submission Endpoints
+      description: "This endpoint allows adding an a matrix file 
+          to the M1CS Database with all required and optional information. A mirror temperature and zenith angle
+          must be provided. The database key for the database entry created for the submitted item is the result."
+      summary: "Add an A-matrix to the M1CS Database."
+      operationId: addAMatrix
+      parameters:
+        - $ref: '#/components/parameters/userTime'
+        - name: za
+          in: query
+          description: The zenith angle associated with the A-matrix in degrees of arc.
+          example: 45.0
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: temp
+          in: query
+          description: The mirror temperature associated with the A-matrix in degrees Fahrenheit.
+          example: 23.2
+          required: true
+          schema:
+            type: number
+            format: double
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: The submitted matrix has been successfully added. The unique key is returned within a JSON object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SegMapEntry"
+        '401':
+          description:
+            "Bad Request. The caller is not authorized for this operation."
+        '500':
+          description:
+            "Bad Request. Arguments provided were not correct or were incomplete: with explanatory text."
+
 
   '/temps':
       post:
@@ -757,7 +805,7 @@ components:
       description: type of a submitted file, most are arrays within files
       type: string
       enum:
-        [AMAT, TOTM, ILG, TCTM, TITM, TATM, SCC, SHWP, SGWP, SGHV, BACV, BSEV]
+        [ TOTM, ILG, TCTM, TITM, TATM, SCC, SHWP, SGWP, SGHV, BACV, BSEV ]
       example: SCC
     OtherType:
       description: type of a submitted JSON-based item
