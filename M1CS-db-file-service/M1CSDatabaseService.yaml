@@ -802,10 +802,10 @@ components:
         [ ISEG, STT, BACV, BSEV, OLD, ILD, SSDID, ILS, OLS, CSC ]
       example: ISEG
     FileType:
-      description: type of a submitted file, most are arrays within files
+      description: type of a submitted file, most are arrays or matrices within files
       type: string
       enum:
-        [ TOTM, ILG, TCTM, TITM, TATM, SCC, SHWP, SGWP, SGHV, BACV, BSEV ]
+        [ TOTM, ILG, TCTM, TITM, TATM, SCC, SHWP, SGWP, SGHV, BACV, BSEV, SSDID, ILS, OLS, CSC, OLD, ILD, ISEG, STT, WHPS ]
       example: SCC
     OtherType:
       description: type of a submitted JSON-based item
